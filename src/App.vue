@@ -1,30 +1,66 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <!-- default for router view is home -->
+  <main>
+    <NavbarVue></NavbarVue>
+    <router-view style="background-color: rgb(186, 221, 250); width: 100%" />
+  </main>
 </template>
 
+<script>
+import NavbarVue from "./components/Navbar.vue"
+export default {
+  components: { NavbarVue }
+}
+
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans Display", sans-serif;
 }
 
-#nav {
-  padding: 30px;
+main {
+  display: flex;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.font-18 {
+  font-size: 18px;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+.flex-sp-between {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.width-400 {
+  width: 400px;
+}
+
+input {
+  padding: 5px;
+  margin-right: 25px;
+  font-size: 16px;
+}
+input[type="date"], input[type="text"], input[type="number"] {
+  width: 300px;
+}
+input[type="date"], input[type="button"], input[type="month"] {
+  cursor: pointer;
+}
+
+.pd-l-25 {
+  padding-left: 25px;
+}
+
+.mg-t-50 {
+  margin-top: 50px;
+}
+
+.mg-t-10 {
+  margin-top: 10px;
 }
 </style>

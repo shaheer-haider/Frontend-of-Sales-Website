@@ -1,10 +1,6 @@
 <template>
     <div class="pd-l-25">
-        <input
-            type="button"
-            value="Today's Report"
-            @click="() => generateDailyReport(reportsDate, duration, filteredData())"
-        />
+        <input type="button" value="Today's Report" @click="() => generateDailyReport()" />
         <input type="button" value="Yesterday's Report" @click="yesterdaysReport" />
         <div class="mg-t-50">
             <p class="font-18">Choose Date for Older Report</p>
@@ -21,7 +17,7 @@
 </template>
 
 <script>
-import data from '@/data.json'
+const axios = require('axios').default;
 export default {
     data() {
         return {
@@ -31,24 +27,21 @@ export default {
         }
     },
     methods: {
-        generateDailyReport(date, duration, data) {
-            let reportData = { date: date.toLocaleDateString(), duration: duration, data: data }
-            localStorage.setItem("dataForReport", JSON.stringify(reportData));
-            this.$router.push(`/generate-report`)
-        },
-        filteredData() {
-            return Object.values(data).filter(
-                item => item["date"] == this.reportsDate.toLocaleDateString()
-            )
+        generateDailyReport() {
+            axios.get(`http://localhost:5000/day-report/${this.reportsDate.toLocaleDateString().replaceAll('/', '-')}`).then((response) => {
+                let reportData = { date: this.reportsDate.toLocaleDateString(), duration: "Daily", data: response['data'] }
+                localStorage.setItem("dataForReport", JSON.stringify(reportData));
+                this.$router.push(`/generate-report`)
+            })
         },
         yesterdaysReport() {
             let todaysDate = new Date()
             this.reportsDate.setDate(todaysDate.getDate() - 1)
-            this.generateDailyReport(this.reportsDate, this.duration, this.filteredData())
+            this.generateDailyReport()
         },
         customSingleDateReport(date) {
             this.reportsDate = date
-            this.generateDailyReport(date, this.duration, this.filteredData())
+            this.generateDailyReport()
         },
         _selectedDate() {
             return new Date(this.selectedDate)

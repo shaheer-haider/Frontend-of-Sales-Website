@@ -1,16 +1,5 @@
-<!-- generated data keys -->
-<!-- date(localdatestring), duration(string), data(object) -->
-<!-- generatedData['data'] -->
-<!-- "unique1": {
-        "date": "10/3/2021",
-        "itemName": "Locket",
-        "work": "Polish",
-        "weight": 25.1,
-        "priceOfDay": 80
-} -->
 <template>
     <div v-if="generatedData['data'][0] != null" id="report">
-        <!-- title -->
         <div id="reportTitleDiv">
             <h1 v-if="generatedData['date'] == new Date().toLocaleDateString()">
                 {{ generatedData["duration"] }} Today's Sales
@@ -19,7 +8,6 @@
             <h1 v-else>Report of {{ generatedData['date'] }}</h1>
         </div>
 
-        <!-- content -->
         <div id="reportContent">
             <div id="table-wrapper">
                 <table id="reportTable">
@@ -29,9 +17,9 @@
                             <th class="font-18">Item Name</th>
                             <th class="font-18">Work</th>
                             <th class="font-18">Weight</th>
-                            <th class="font-18">Price</th>
+                            <th v-if="generatedData['duration'] != 'Daily'" class="font-18">Rate</th>
                             <th v-if="generatedData['duration'] != 'Daily'" class="font-18">Date</th>
-                            <th v-if="generatedData['duration'] != 'Daily'" class="font-18">Rates</th>
+                            <th class="font-18">Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,12 +34,14 @@
                             <td>{{ index + 1 }}</td>
                             <td>{{ data['itemName'] }}</td>
                             <td>{{ data['work'] }}</td>
-                            <td>{{ data['weight'].toFixed(3) }} gm</td>
-                            <td>Rs. {{ (data['weight'] * data["priceOfDay"]).toFixed(2) }}</td>
+                            <td>{{ data['weight'].toFixed(2) }} gm</td>
+                            <!-- if not daily then show price of day seperately -->
+                            <td v-if="generatedData['duration'] != 'Daily'">{{ data['priceOfDay'] }}</td>
+                            <!-- if not daily then show date of entry seperately -->
                             <td
                                 v-if="generatedData['duration'] != 'Daily'"
                             >{{ new Date(data['date']).toDateString() }}</td>
-                            <td v-if="generatedData['duration'] != 'Daily'">{{ data['priceOfDay'] }}</td>
+                            <td>Rs. {{ (data['weight'] * data["priceOfDay"]).toFixed(2) }}</td>
                         </tr>
                         <tr>&nbsp;</tr>
                     </tbody>
@@ -63,22 +53,24 @@
                     {{ generatedData['date'] }}
                 </p>
                 <p v-if="generatedData['duration'] == 'Daily'" class="font-18 width-400">
-                    <b>Rate:</b>
+                    <b>Price of Day:</b>
                     Rs. {{ generatedData['data'][0]["priceOfDay"] }}
                 </p>
             </div>
+
             <div class="flex-sp-between">
                 <p class="font-18 width-400">
                     <b>Total Weight:</b>
-                    {{ totalWeight.toFixed(4) }} gm
+                    {{ totalWeight.toFixed(2) }} gm
                 </p>
                 <p class="font-18 width-400">
                     <b>Total Price:</b>
-                    Rs. {{ totalPrice }}
+                    Rs. {{ totalPrice.toFixed(2) }}
                 </p>
             </div>
         </div>
     </div>
+
     <h1 v-else>No Report Found on {{ generatedData['date'] }}.</h1>
 </template>
 
@@ -91,7 +83,10 @@ export default {
     },
     computed: {
         totalWeight() {
-            return this.generatedData['data'].map(dataSingle => dataSingle['weight']).reduce((weight1, weight2) => weight1 + weight2)
+            if (this.generatedData['data'].length > 1)
+                return this.generatedData['data'].map(dataSingle => dataSingle['weight']).reduce((weight1, weight2) => weight1 + weight2)
+            else
+                return this.generatedData['data'][0]['weight']
         },
         totalPrice() {
             return this.generatedData['data'].map(dataSingle => dataSingle['weight'] * dataSingle['priceOfDay']).reduce((price1, price2) => price1 + price2)

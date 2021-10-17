@@ -85,9 +85,10 @@
     main {
         flex-direction: column;
     }
+
     #navbar {
         width: 100vw;
-        height: 100px;
+        height: max-content;
     }
 }
 </style>

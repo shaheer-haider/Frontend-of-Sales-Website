@@ -1,7 +1,8 @@
 <template>
+    <!-- if takes generated Data from reportsmanager pages it's obvios that it'll should have data, if no data is available then it'll not show any table-->
     <div v-if="generatedData['data'][0] != null" id="report">
         <div id="reportTitleDiv">
-            <h1 v-if="generatedData['date'] == new Date().toLocaleDateString()">
+            <h1 v-if="generatedData['date'] === new Date().toLocaleDateString()">
                 {{ generatedData["duration"] }} Today's Sales
                 Report
             </h1>
@@ -17,8 +18,8 @@
                             <th class="font-18">Item Name</th>
                             <th class="font-18">Work</th>
                             <th class="font-18">Weight</th>
-                            <th v-if="generatedData['duration'] != 'Daily'" class="font-18">Rate</th>
-                            <th v-if="generatedData['duration'] != 'Daily'" class="font-18">Date</th>
+                            <th v-if="generatedData['duration'] !== 'Daily'" class="font-18">Rate</th>
+                            <th v-if="generatedData['duration'] !== 'Daily'" class="font-18">Date</th>
                             <th class="font-18">Price</th>
                         </tr>
                     </thead>
@@ -35,11 +36,11 @@
                             <td>{{ data['itemName'] }}</td>
                             <td>{{ data['work'] }}</td>
                             <td>{{ data['weight'].toFixed(2) }} gm</td>
-                            <!-- if not daily then show price of day seperately -->
-                            <td v-if="generatedData['duration'] != 'Daily'">{{ data['priceOfDay'] }}</td>
-                            <!-- if not daily then show date of entry seperately -->
+                            <!-- if not daily then show price of day separately -->
+                            <td v-if="generatedData['duration'] !== 'Daily'">{{ data['priceOfDay'] }}</td>
+                            <!-- if not daily then show date of entry separately -->
                             <td
-                                v-if="generatedData['duration'] != 'Daily'"
+                                v-if="generatedData['duration'] !== 'Daily'"
                             >{{ new Date(data['date']).toDateString() }}</td>
                             <td>Rs. {{ (data['weight'] * data["priceOfDay"]).toFixed(2) }}</td>
                         </tr>
@@ -52,7 +53,7 @@
                     <b>Date:</b>
                     {{ generatedData['date'] }}
                 </p>
-                <p v-if="generatedData['duration'] == 'Daily'" class="font-18 width-400">
+                <p v-if="generatedData['duration'] === 'Daily'" class="font-18 width-400">
                     <b>Price of Day:</b>
                     Rs. {{ generatedData['data'][0]["priceOfDay"] }}
                 </p>
@@ -84,7 +85,7 @@ export default {
     computed: {
         totalWeight() {
             if (this.generatedData['data'].length > 1)
-                return this.generatedData['data'].map(dataSingle => dataSingle['weight']).reduce((weight1, weight2) => weight1 + weight2)
+                return this.generatedData['data'].map(dataSingle => dataSingle['weight']).reduce((weight1, weight2) => weight1 + weight2);
             else
                 return this.generatedData['data'][0]['weight']
         },

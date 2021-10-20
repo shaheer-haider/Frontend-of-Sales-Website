@@ -1,18 +1,26 @@
 <template>
     <div class="pd-l-25">
-        <h1>{{ selectedMonth }}</h1>
-        <input type="button" value="This Month" @click="() => thisMonthOrLast(0)" />
-        <input type="button" value="Last Month" @click="() => thisMonthOrLast(1)" />
+        <!-- for fixed this or last month, 0 or 1 param is used to subtract month if needed -->
+        <input
+                type="button"
+                value="This Month"
+                @click="() => generateMonthlyReport(thisMonthOrLast(1))"
+        />
+        <input
+                type="button"
+                value="Last Month"
+                @click="() => generateMonthlyReport(thisMonthOrLast(0))"
+        />
         <div class="mg-t-50">
             <h4>OR</h4>
             <div class="font-18">
-                <p>Select a Month to generate report:</p>
-                <input class="mg-t-10" type="month" v-model="selectedMonth" />
+                <label for="monthSelect">Select a Month to generate report:</label>
+                <input id="monthSelect" class="mg-t-10" type="month" v-model="selectedMonth"/>
                 <input
-                    v-if="selectedMonth"
-                    type="button"
-                    value="Generate Report"
-                    @click="() => generateMonthlyReport(parseMonth(this.selectedMonth))"
+                        v-if="selectedMonth"
+                        type="button"
+                        value="Generate Report"
+                        @click="() => generateMonthlyReport(selectedMonth)"
                 />
             </div>
         </div>
@@ -20,39 +28,32 @@
 </template>
 
 <script>
-import data from '@/data.json'
-export default {
-    data() {
-        return {
-            selectedMonth: null,
-        }
-    },
-    methods: {
-        localeDateToMonthAndYear(localDate) {
-            return localDate.split("/")[0] + localDate.split("/")[2]
+    const axios = require('axios').default;
+    export default {
+        data() {
+            return {
+                selectedMonth: null,
+            }
         },
-        filteredData(month) {
-            return Object.values(data).filter(
-                item => this.localeDateToMonthAndYear(item["date"]) == month
-            )
+        methods: {
+            generateMonthlyReport(month) {
+                axios.get(`http://localhost:5000/month-report/${month}`).then((response) => {
+                    month = month.split("-");
+                    let dateString = `${new Date(month[0], month[1] - 1).toLocaleString('en-us', {month: 'short'})} ${month[1]}`;
+                    let reportData = {
+                        date: dateString,
+                        duration: "Weekly",
+                        data: response['data']
+                    };
+                    localStorage.setItem("dataForReport", JSON.stringify(reportData));
+                    this.$router.push(`/generate-report`)
+                })
+            },
+            thisMonthOrLast(m) {
+                let month = new Date();
+                month = month.getFullYear() + "-" + ((month.getMonth() + m) < 10 ? "0" : "") + (month.getMonth() + m);
+                return month
+            },
         },
-        generateMonthlyReport(month) {
-            let beautifyMonth = new Date(month.slice(0, -4)).toLocaleString('en-us', {month: "short"}) + " " + month.slice(-4)
-            let reportData = { date: beautifyMonth, duration: "Monthly", data: this.filteredData(month) }
-            localStorage.setItem("dataForReport", JSON.stringify(reportData))
-            this.$router.push(`/generate-report`)
-            return reportData
-        },
-        thisMonthOrLast(m) {
-            let month = new Date()
-            month.setMonth(month.getMonth() - m)
-            month = (month.getMonth() + 1).toString() + month.getFullYear()
-            this.generateMonthlyReport(month)
-        },
-        parseMonth(selectedMonth) {
-            let d = new Date(selectedMonth)
-            return (d.getMonth() + 1).toString() + d.getFullYear()
-        }
-    },
-}
+    }
 </script>

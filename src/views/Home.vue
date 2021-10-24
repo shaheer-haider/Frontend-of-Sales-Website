@@ -1,128 +1,142 @@
 <template>
     <div class="home">
+        <div id="msgModel" v-if="showSuccessBox !== ''">
+            <p>{{ showSuccessBox }}</p>
+        </div>
         <h1 id="addSalesTitle">Add Sales</h1>
-        <form id="salesForm" @submit.prevent="save">
+        <form @submit.prevent="save" id="salesForm">
             <div class="inputField">
-                <label for="date" class="font-18">Date:</label>
+                <label class="font-18" for="date">Date:</label>
                 <input
                         id="date"
-                        type="date"
-                        required
                         placeholder="MM/DD/YYYY"
-                        v-model="inputs.date"
+                        required
+                        type="date"
+                        v-model="date"
                 />
             </div>
 
             <div class="inputField">
-                <label for="itemName" class="font-18">Item Name:</label>
+                <label class="font-18" for="itemName">Item Name:</label>
                 <input
                         id="itemName"
-                        type="text"
+                        name="itemName"
                         placeholder="Enter Item Name"
                         required
-                        name="itemName"
-                        v-model="inputs.itemName"
+                        type="text"
+                        v-model="itemName"
                 />
             </div>
 
             <div class="inputField">
-                <label for="work" class="font-18">Work:</label>
+                <label class="font-18" for="work">Work:</label>
                 <input
                         id="work"
-                        type="text"
+                        name="work"
                         placeholder="Work on Item"
                         required
-                        name="work"
-                        v-model="inputs.work"
+                        type="text"
+                        v-model="work"
                 />
             </div>
 
             <div class="inputField">
-                <label for="weight" class="font-18">Weight:</label>
+                <label class="font-18" for="weight">Weight:</label>
                 <input
                         id="weight"
-                        type="number"
-                        placeholder="Enter Weight in gm"
-                        name="weight"
-                        required
                         min="0.01"
+                        name="weight"
+                        placeholder="Enter Weight in gm"
+                        required
                         step="0.01"
-                        v-model="inputs.weight"
+                        type="number"
+                        v-model="weight"
                 />
             </div>
 
             <div class="inputField">
-                <label for="priceOfDay" class="font-18">Price of Day:</label>
+                <label class="font-18" for="priceOfDay">Price of Day:</label>
                 <input
                         id="priceOfDay"
-                        type="number"
-                        placeholder="Enter Price of Day"
-                        name="priceOfDay"
-                        required
                         min="0.01"
+                        name="priceOfDay"
+                        placeholder="Enter Price of Day"
+                        required
                         step="0.01"
-                        v-model="inputs.priceOfDay"
+                        type="number"
+                        v-model="priceOfDay"
                 />
             </div>
             <div class="inputField">
                 <br/>
-                <button id="saveButton" class="font-18" type="submit">Save</button>
+                <button :disabled="this.submittingInProcess" class="font-18" id="saveButton" type="submit">Save</button>
             </div>
         </form>
     </div>
 </template>
 
-<script setup>
-    const axios = require('axios').default;
-    import {ref} from 'vue'
-
-    const inputs = ref({
-        date: new Date().toISOString().slice(0, 10),
-        itemName: null,
-        work: null,
-        weight: 0.1,
-        priceOfDay: 0.1,
-    });
-
-    function resetInputFields() {
-        // reset input fields
-        inputs.value.date = new Date().toISOString().slice(0, 10);
-        inputs.value.itemName = null;
-        inputs.value.work = null;
-        inputs.value.weight = 0.1;
-        inputs.value.priceOfDay = 0.1
+<script>    const axios = require('axios').default;
+export default {
+    data: () => {
+        return {
+            date: new Date().toISOString().slice(0, 10),
+            itemName: "",
+            work: "",
+            weight: 0.1,
+            priceOfDay: 0.1,
+            showSuccessBox: "",
+            submittingInProcess: false
+        }
+    },
+    methods: {
+        resetInputFields() {
+            // reset input fields
+            this.date = new Date().toISOString().slice(0, 10);
+            this.itemName = "";
+            this.work = ""
+        },
+        showModalMsg(msg) {
+            this.showSuccessBox = msg;
+            setTimeout(() => {
+                this.showSuccessBox = "";
+            }, 2000)
+        },
+        save() {
+            this.submittingInProcess = true;
+            const data = {
+                'date': this.date,
+                'itemName': this.itemName,
+                'work': this.work,
+                'weight': this.weight,
+                'priceOfDay': this.priceOfDay
+            };
+            axios.post(
+                'http://localhost:5000/add-data',
+                data
+            )
+                .then((response) => {
+                    if (response['data']["statusMessage"] === 1) {
+                        this.resetInputFields();
+                        this.submittingInProcess = false;
+                        this.showModalMsg("Saved Successfully");
+                    }
+                })
+                .catch(() => {
+                    this.submittingInProcess = false;
+                    this.showModalMsg("An Error Occurred, Please Try Again");
+                    // send error in my logs
+                    // it is to do later
+                    // show error message
+                })
+                .finally(() => {
+                    // show success
+                    // this.resetInputFields()
+                })
+        }
     }
+}
 
-    function save() {
-        axios.post(
-            'http://localhost:5000/add-data',
-            {
-                date: "date",
-                itemName: "WOW",
-                work: "OK",
-                weight: "10",
-                priceOfDay: "20"
-            },
-            {
-                headers: {
-                    date: inputs.value.date,
-                    itemName: "OK"
-                }
-            }
-        )
-            .then((response) => {
-                console.log(response)
-            })
-            .catch(() => {
-                // send error in my logs
-                // it is to do later
-                // show error message
-            })
-            .finally(() => {
-                // show success
-                resetInputFields()
-            })
-    }
+
 </script>
 
 <style scoped>
@@ -145,6 +159,17 @@
 
     #saveButton {
         padding: 10px 20px 10px 20px;
+    }
+
+    #msgModel {
+        background-color: #0d6efd;
+        color: white;
+        padding: 15px;
+        font-weight: bold;
+        border-radius: 15px;
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
     }
 
     @media only screen and (max-width: 800px) {

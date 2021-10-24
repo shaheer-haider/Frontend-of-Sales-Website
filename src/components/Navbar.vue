@@ -26,69 +26,76 @@
     </div>
 </template>
 <style>
-#navbar {
-    border-right: 2px solid black;
-    padding-top: 20px;
-    background-color: #0d6efd;
-}
+    #navbar {
+        border-right: 2px solid black;
+        padding-top: 20px;
+        background-color: #0d6efd;
+    }
 
-#brandTitle {
-    margin-left: 20px;
-    text-shadow: 1px 1px 0px rgb(155, 187, 255);
-}
+    #brandTitle {
+        margin-left: 20px;
+        text-shadow: 1px 1px 1px rgb(155, 187, 255);
+    }
 
-#navList {
-    list-style: none;
-    padding-top: 10px;
-}
+    #navList {
+        list-style: none;
+        padding-top: 10px;
+    }
 
-.navLi {
-    height: 50px;
-    padding-left: 25px;
-    padding-top: 14px;
-    border-bottom: 1px solid black;
-    transition: background-color 300ms;
-}
+    .navLi {
+        height: 50px;
+        padding-left: 25px;
+        padding-top: 14px;
+        border-bottom: 1px solid black;
+        transition: background-color 300ms;
+    }
 
-.navLi:first-of-type {
-    border-top: 1px solid black;
-}
+    .navLi:first-of-type {
+        border-top: 1px solid black;
+    }
 
-.routerLinks {
-    display: block;
-    height: 100%;
-    text-decoration: none;
-}
+    .routerLinks {
+        display: block;
+        height: 100%;
+        text-decoration: none;
+    }
 
-.navItemsPara {
-    color: white;
-    transition: font-size 300ms;
-}
+    .navItemsPara {
+        color: white;
+        transition: font-size 300ms;
+    }
 
-.navLi:hover .navItemsPara {
-    font-size: 18px;
-}
+    .navLi:hover .navItemsPara {
+        font-size: 18px;
+    }
 
-.navLi:hover {
-    background-color: #0051ca;
-}
-
-#navbar {
-    padding-bottom: 10px;
-    width: 250px;
-    vertical-align: middle;
-    height: 100vh;
-}
-
-/* only when width is less than 800px */
-@media only screen and (max-width: 800px) {
-    main {
-        flex-direction: column;
+    .navLi:hover {
+        background-color: #0051ca;
     }
 
     #navbar {
-        width: 100vw;
-        height: max-content;
+        padding-bottom: 10px;
+        width: 250px;
+        vertical-align: middle;
+        height: 100vh;
     }
-}
+
+    /* only when width is less than 800px */
+    @media only screen and (max-width: 800px) {
+        main {
+            flex-direction: column;
+        }
+
+        #navbar {
+            width: 100vw;
+            height: 275px;
+        }
+        .navItemsPara {
+            font-size: 15px
+        }
+
+        .navLi:hover .navItemsPara {
+            font-size: 16px;
+        }
+    }
 </style>

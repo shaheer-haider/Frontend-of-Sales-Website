@@ -1,8 +1,8 @@
 <template>
   <div id="reportManager">
     <h1 id="reportMainTitle">{{ duration }} Sales Report</h1>
-    <DailyReportsManager v-if="duration == 'Daily'"></DailyReportsManager>
-    <WeeklyReportsManager v-else-if="duration == 'Weekly'"></WeeklyReportsManager>
+    <DailyReportsManager v-if="duration === 'Daily'"></DailyReportsManager>
+    <WeeklyReportsManager v-else-if="duration === 'Weekly'"></WeeklyReportsManager>
     <MonthlyReportsManager v-else></MonthlyReportsManager>
   </div>
 </template>
